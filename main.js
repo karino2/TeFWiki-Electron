@@ -8,7 +8,7 @@ const windowStateKeeper = require('electron-window-state')
 const options = {
     uriSuffix: '.md',
     makeAllLinksAbsolute: true,
-    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+))?\]\]/,
+    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶー]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+))?\]\]/,
     htmlAttributes: {'class': 'wikilink'}
 }
 
