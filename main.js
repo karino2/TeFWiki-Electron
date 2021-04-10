@@ -11,15 +11,10 @@ const options = {
     htmlAttributes: {'class': 'wikilink'}
 }
 
-const wikilinks = require('markdown-it-wikilinks')(options)
-
-// wrongly path hardcoded regexp in wikilinks...
-// workaround.
-wikilinks.regexp = RegExp('^' + options.linkPattern.source )
+const wikilinks = require('@kwvanderlinde/markdown-it-wikilinks')(options)
 
 const md = require('markdown-it')()
     .use(wikilinks)
-
 
 const store = new Store()
 
