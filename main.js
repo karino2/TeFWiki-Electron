@@ -18,11 +18,37 @@ const md = require('markdown-it')()
 
 const store = new Store()
 
+const MAX_RECENT = 10
+
+const recentFiles = async() => {
+    const dir = store.get('root-path')
+    const files = await fs.readdir(dir)
+    const fwithm = await Promise.all(files
+        .filter( fname => fname.endsWith(".md") )
+        .map( async fname=> {
+            const full = path.join(dir, fname)
+            const mtime = (await fs.stat(full)).mtime
+            return {fname, mtime}
+        }))
+
+    return fwithm.sort( (a, b)=> b.mtime - a.mtime)
+            .slice(0, MAX_RECENT)
+            .map( pair=> {return {abs: `/${pair.fname}`, label:pair.fname.substring(0, pair.fname.length-3)}})
+}
+
+const updateRecentFiles = async(win) => {
+   const recents = await recentFiles()
+   win.send('update-recents', recents)
+}
+
+
 const createWindow = async ()=>{
-    const { width, height } = screen.getPrimaryDisplay().workAreaSize
+    // const { width, height } = screen.getPrimaryDisplay().workAreaSize
     const win = new BrowserWindow({
+        /*
       width: width,
       height: height,
+      */
       webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
@@ -46,6 +72,7 @@ const createWindow = async ()=>{
     {
         await gotoHome(rootPath, win)
     }
+    updateRecentFiles(win)
 }
 
 app.on('window-all-closed', () => {
@@ -177,13 +204,12 @@ const template = [
   }
 ]
 
+
 app.whenReady().then(async () => {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 
     await createWindow()
-    console.log(store.get('root-path'))
-
 
     app.on('activate', async () => {
         if (BrowserWindow.getAllWindows().length === 0) {

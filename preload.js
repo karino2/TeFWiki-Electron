@@ -4,15 +4,26 @@ window.addEventListener('DOMContentLoaded', () => {
     const viewRoot = document.getElementById('content-root')
     let mdname = ""
 
-    viewRoot.addEventListener('click', (e)=> {
+    // 辿ったらtrueを返す
+    const followLink = (e)=> {
         if (e.target.tagName == 'A' && e.target.className == 'wikilink')
         {
             e.preventDefault()
             const href = e.target.href; /// file:///HelloLink.md, etc.
             ipcRenderer.send('follow-link', href.substring(8))
-            return
+            return true
         }
-        console.log("click")
+        return false
+    }
+
+    viewRoot.addEventListener('click', (e)=> {
+        if (followLink(e))
+            return;
+    })
+
+    document.getElementById("linkbar").addEventListener('click', (e)=> {
+        if (followLink(e))
+            return;
     })
 
     const title = document.getElementById('title')
@@ -82,4 +93,16 @@ window.addEventListener('DOMContentLoaded', () => {
         ipcRenderer.send('submit', mdname, editTextArea.value)
         toViewMode()        
     })
+
+    // recents
+    const recentsUL = document.getElementById('recents')    
+
+    ipcRenderer.on('update-recents', (event, recents) => {
+        let htmls = []
+        for (const recent of recents) {
+            htmls.push( `<li class="menu-item"><a class="wikilink" href="${recent.abs}">${recent.label}</a></a></li>`)
+        }
+        recentsUL.innerHTML = htmls.join('\n')
+    })
+
 })
