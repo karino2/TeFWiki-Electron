@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
         {
             e.preventDefault()
             const href = e.target.href; /// file:///HelloLink.md, etc.
+            toViewMode()
             ipcRenderer.send('follow-link', href.substring(8))
             return true
         }
