@@ -1,8 +1,9 @@
-const { ipcMain, dialog, app, BrowserWindow, screen, Menu, shell } = require('electron')
+const { ipcMain, dialog, app, BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 const fs = require('fs/promises')
 const { constants } = require('fs')
 const Store = require('electron-store')
+const windowStateKeeper = require('electron-window-state')
 
 const options = {
     uriSuffix: '.md',
@@ -43,16 +44,20 @@ const updateRecentFiles = async(win) => {
 
 
 const createWindow = async ()=>{
-    // const { width, height } = screen.getPrimaryDisplay().workAreaSize
-    const win = new BrowserWindow({
-        /*
-      width: width,
-      height: height,
-      */
-      webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
-      }
+    const winStat = windowStateKeeper({
+        defaultWidth: 1000,
+        defaultHeight: 800
     })
+    const win = new BrowserWindow({
+        x: winStat.x,
+        y: winStat.y,
+        width: winStat.width,
+        height: winStat.height,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js')
+        }
+    })
+    winStat.manage(win)
   
     win.loadFile('index.html')
 
