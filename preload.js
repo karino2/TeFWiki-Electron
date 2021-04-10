@@ -61,7 +61,6 @@ window.addEventListener('DOMContentLoaded', () => {
         editButtons.style.display = 'block'
         editTextArea.style.display = 'block'
         editTextArea.value = text
-        editTextArea.rows = Math.max(5, text.split('\n').length+1)
     }
     ipcRenderer.on('start-edit', (event, text)=> {
         toEditMode(text)
