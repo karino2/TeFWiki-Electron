@@ -3,15 +3,22 @@ const path = require('path')
 const fs = require('fs/promises')
 const { constants } = require('fs')
 const Store = require('electron-store')
-const { PassThrough } = require('stream')
 
 const options = {
     uriSuffix: '.md',
-    makeAllLinksAbsolute: true,    
+    makeAllLinksAbsolute: true,
+    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+))?\]\]/,
     htmlAttributes: {'class': 'wikilink'}
 }
+
+const wikilinks = require('markdown-it-wikilinks')(options)
+
+// wrongly path hardcoded regexp in wikilinks...
+// workaround.
+wikilinks.regexp = RegExp('^' + options.linkPattern.source )
+
 const md = require('markdown-it')()
-    .use(require('markdown-it-wikilinks')(options))
+    .use(wikilinks)
 
 
 const store = new Store()
@@ -97,6 +104,7 @@ const openDirDialog = async (onSuccess) => {
 }
 
 ipcMain.on('follow-link', async (event, fname)=> {
+    fname = decodeURI(fname)
     const full = toFullPath(fname)
     try {
         await fs.access(full, constants.O_RDWR)
