@@ -152,6 +152,7 @@ ipcMain.on('submit', async (event, mdname, text)=> {
     const full = toFullPath(mdname)
     await fs.writeFile( full, text )
     openMd(mdname, event.sender)
+    updateRecentFiles(event.sender)
 })
 
 ipcMain.on('cancel-back', async(event, mdname)=> {
