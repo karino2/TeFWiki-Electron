@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TeFWiki</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.css">
+</head>
+<body id="body" style="background: #FBF8ED">
+    <nav class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <div class="container">
+                    <h1 class="title" id="title">Hello</h1>
+                    <div class="content is-small">
+                        Last modified: <span id="date">21:34</span>
+                    </div>    
+                </div>
+            </div>
+    
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                <div id="view-buttons">
+                    <button class="button" id="edit">Edit</button>
+                </div>
+                <div id="edit-buttons" style="display:none;">
+                    <button class="button" id="edit-cancel">Cancel</button>
+                    <button class="button" id="edit-submit">Submit</button>
+                </div>
+        </div>
+    </nav>
+    <div class="container">
+        <section class="section">
+            <div id="content-root" class="content">
+                    Hello World
+            </div>
+            <textarea style="display:none;" class="textarea" id="edit-textarea"></textarea>
+        </section>    
+    </div>
+</body>
+</html>
