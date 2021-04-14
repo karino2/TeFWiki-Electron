@@ -19,7 +19,7 @@ const md = require('markdown-it')()
 
 const store = new Store()
 
-const MAX_RECENT = 10
+const MAX_RECENT = 15
 
 const recentFiles = async() => {
     const dir = store.get('root-path')
