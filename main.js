@@ -5,6 +5,9 @@ const { constants } = require('fs')
 const Store = require('electron-store')
 const windowStateKeeper = require('electron-window-state')
 
+if (require('electron-squirrel-startup')) return app.quit()
+
+
 const options = {
     uriSuffix: '.md',
     makeAllLinksAbsolute: true,

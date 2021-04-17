@@ -40,7 +40,9 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "tefwiki_electron"
+            "name": "tefwiki_electron",
+            "authors": "hogeika2@gmail.com",
+            "description": "TeFWiki for Windows."
           }
         },
         {
