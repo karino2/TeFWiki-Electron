@@ -100,7 +100,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.on('update-recents', (event, recents) => {
         let htmls = []
         for (const recent of recents) {
-            htmls.push( `<li class="menu-item"><a class="wikilink" href="${recent.abs}">${recent.label}</a></a></li>`)
+            htmls.push( `<li class="menu-item"><a class="wikilink" href="tefwiki://${recent.abs}">${recent.label}</a></a></li>`)
         }
         recentsUL.innerHTML = htmls.join('\n')
     })
