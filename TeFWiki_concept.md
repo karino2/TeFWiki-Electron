@@ -27,11 +27,11 @@ Code highlight is PC ver only (at least now).
 
 **Android ver**
 
-![Android mdtest](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_mdtest.png")
+![Android mdtest](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_mdtest.png)
 
-![Android Recents](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_recents.png")
+![Android Recents](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_recents.png)
 
-![Android edit](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_edit.png")
+![Android edit](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_edit.png)
 
 ### WikiLink spec
 
