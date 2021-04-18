@@ -11,6 +11,7 @@ if (require('electron-squirrel-startup')) return app.quit()
 
 const options = {
     uriSuffix: '.md',
+    baseURL: "tefwiki:///",
     makeAllLinksAbsolute: true,
     linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶー]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ]+))?\]\]/,
     htmlAttributes: {'class': 'wikilink'}

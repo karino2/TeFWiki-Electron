@@ -9,9 +9,9 @@ window.addEventListener('DOMContentLoaded', () => {
         if (e.target.tagName == 'A' && e.target.className == 'wikilink')
         {
             e.preventDefault()
-            const href = e.target.href; /// file:///HelloLink.md, etc.
+            const href = e.target.href; /// tefwiki:///HelloLink.md, etc.
             toViewMode()
-            ipcRenderer.send('follow-link', href.substring(8))
+            ipcRenderer.send('follow-link', href.substring(11))
             return true
         }
         return false
