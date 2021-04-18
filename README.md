@@ -1,5 +1,24 @@
 # TeFWiki-Electron
-TeFWiki app, Electron version. (Plain text, markdown, wikilink)
+
+Plain text markdown wiki. Electron app.
+
+[What's TeFWiki?](TeFWiki_concept.md)
+
+### Screenshot
+
+![Mac, screenshot](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_mac.png)
+
+![Mac, edit](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_edit_mac.png)
+
+### Download
+
+Download from release link.
+
+[https://github.com/karino2/TeFWiki-Electron/releases](https://github.com/karino2/TeFWiki-Electron/releases)
+
+# For development
+
+Here are basic commands for development.
 
 ### How to run
 
