@@ -4,6 +4,7 @@ const fs = require('fs/promises')
 const { constants } = require('fs')
 const Store = require('electron-store')
 const windowStateKeeper = require('electron-window-state')
+const hljs = require('highlight.js')
 
 if (require('electron-squirrel-startup')) return app.quit()
 
@@ -16,9 +17,25 @@ const options = {
 }
 
 const wikilinks = require('@kwvanderlinde/markdown-it-wikilinks')(options)
+const taskList = require('markdown-it-task-lists')
 
-const md = require('markdown-it')()
+const md = require('markdown-it')({
+        highlight: (str, lang) => {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return hljs.highlight(lang, str).value;
+                } catch (__) {}
+            }
+          
+            return '' // use external default
+        }
+    })
     .use(wikilinks)
+    .use(taskList)
+
+md.renderer.rules.table_open = ()=> {
+    return '<table class="table is-striped">\n'
+}
 
 const store = new Store()
 
