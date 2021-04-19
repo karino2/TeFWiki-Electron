@@ -6,7 +6,7 @@ TeFWiki is a personal local wiki system based on the plain text file, markdown +
 - Local, no network
 - markdown + WikiLink (ex: `[[SomeLink]]`)
 - Rendering with modern CSS ([bulma.css](https://bulma.io))
-- Android and PC app
+- Both Android phone and PC app
  - For PC, Electron-based app. No need to set up a web server or DB
 - No sync feature, just use standard folder sync app (I use Google Drive+ [AutoSync for Google Drive](https://play.google.com/store/apps/details?id=com.ttxapps.drivesync&hl=en&gl=US) and can recommend, but you can use whatever you want)
 
@@ -24,8 +24,6 @@ There are two variant
 ![Mac, screenshot](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_mac.png)
 
 ![Mac, edit](https://karino2.github.io/assets/images/2021-04/TeFWiki_screenshot_edit_mac.png)
-
-Code highlight is PC ver only (at least now).
 
 **Android ver**
 
@@ -70,7 +68,7 @@ But most of them lack smartphone app and hard to use from the phone.
 
 For the smartphone app side, they store data to their server or private storage.
 
-I need an app for both PC and smartphone which supports the same data.
+I need an app for both PC and smartphone which supports the same data, without lock-in any service.
 
 ### Modern looking, modern implementation
 
