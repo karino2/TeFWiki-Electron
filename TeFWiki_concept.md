@@ -1,10 +1,12 @@
 # What's TeFWiki?
 
-TeFWiki is a wiki system based on the plain text file, markdown + WikiLink.
+TeFWiki is a personal local wiki system based on the plain text file, markdown + WikiLink.
 
 - Plain text file, no metadata, just one folder
+- Local, no network
 - markdown + WikiLink (ex: `[[SomeLink]]`)
-- Both Android phone and PC app
+- Rendering with modern CSS ([bulma.css](https://bulma.io))
+- Android and PC app
  - For PC, Electron-based app. No need to set up a web server or DB
 - No sync feature, just use standard folder sync app (I use Google Drive+ [AutoSync for Google Drive](https://play.google.com/store/apps/details?id=com.ttxapps.drivesync&hl=en&gl=US) and can recommend, but you can use whatever you want)
 
@@ -101,6 +103,7 @@ They can modify or generate data easily without worry about data consistency.
 ### Open Source
 
 This app is Open Source.
-Though I don't think this part is inevitable for a good note-taking app,  Open Source makes it easier for other developers to collaborate with.
+Though I don't think this part is inevitable for a good note-taking app, Open Source makes it easier for other developers to collaborate with.
 
 Also, if I discontinue the development of TeFWiki in the future, you can fork it if you want. 
+
