@@ -16,6 +16,10 @@ Download from release link.
 
 [https://github.com/karino2/TeFWiki-Electron/releases](https://github.com/karino2/TeFWiki-Electron/releases)
 
+### Initial setup
+
+Choose folder to store wiki markdown. For very beginning, create empty folder and choose it.
+
 # For development
 
 Here are basic commands for development.
