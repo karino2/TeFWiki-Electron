@@ -10,12 +10,12 @@ TeFWiki is a personal local wiki system based on the plain text file, markdown +
  - For PC, Electron-based app. No need to set up a web server or DB
 - No sync feature, just use standard folder sync app (I use Google Drive+ [AutoSync for Google Drive](https://play.google.com/store/apps/details?id=com.ttxapps.drivesync&hl=en&gl=US) and can recommend, but you can use whatever you want)
 
-### Download
+# Download
 
 - [For Mac and Windows (Electron based)](https://github.com/karino2/TeFWiki-Electron/releases)
 - Android App: [GooglePlay: TeFWiki](https://play.google.com/store/apps/details?id=io.github.karino2.tefwiki)
 
-**Source code**
+### Source code
 
 - PC App: [https://github.com/karino2/TeFWiki-Electron/](https://github.com/karino2/TeFWiki-Electron/)
 - Android App: [https://github.com/karino2/TeFWiki-Electron/](https://github.com/karino2/TeFWiki-Electron/)
