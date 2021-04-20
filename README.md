@@ -18,7 +18,7 @@ Download from release link.
 
 ### Initial setup
 
-Choose folder to store wiki markdown. For very beginning, create empty folder and choose it.
+Choose folder to store wiki markdown. For the very beginning, create an empty folder and choose it.
 
 # For development
 
