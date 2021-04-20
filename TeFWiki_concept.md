@@ -12,8 +12,8 @@ TeFWiki is a personal local wiki system based on the plain text file, markdown +
 
 # Download
 
-- [For Mac and Windows (Electron based)](https://github.com/karino2/TeFWiki-Electron/releases)
-- Android App: [GooglePlay: TeFWiki](https://play.google.com/store/apps/details?id=io.github.karino2.tefwiki)
+- For Mac and Windows: [Electron App](https://github.com/karino2/TeFWiki-Electron/releases)
+- For Android: [GooglePlay: TeFWiki](https://play.google.com/store/apps/details?id=io.github.karino2.tefwiki)
 
 ### Source code
 
