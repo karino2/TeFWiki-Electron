@@ -42,8 +42,15 @@ const store = new Store()
 
 const MAX_RECENT = 15
 
+// relativeDir format
+//
+// root: ""
+// test/Home.md: "test"
+// test/test2/Home.md: "test/test2"
+let relativeDir = ""
+
 const recentFiles = async() => {
-    const dir = store.get('root-path')
+    const dir = path.join(store.get('root-path'), relativeDir)
     const files = await fs.readdir(dir)
     const fwithm = await Promise.all(files
         .filter( fname => fname.endsWith(".md") )
@@ -107,8 +114,16 @@ app.on('window-all-closed', () => {
     }
 })
 
+/*
+path.join("/abc", "", "def")
+'/abc/def'
+*/
 const toFullPath = (fname) => {
-    return path.join(store.get('root-path'), fname)
+    return path.join(store.get('root-path'), relativeDir, fname)
+}
+
+const toFullDir = () => {
+    return path.join(store.get('root-path'), relativeDir)
 }
 
 const openMd = async(fname, targetWin) => {
@@ -116,7 +131,16 @@ const openMd = async(fname, targetWin) => {
     const stat = await fs.stat(mdpath)
     const cont = await fs.readFile(mdpath)
     const html = md.render(cont.toString())
-    targetWin.send('update-md', fname, stat.mtime, html)
+    targetWin.send('update-md', fname, stat.mtime, html, relativeDir)
+}
+
+const ensureDir = async (dir) => {
+    try {
+        await fs.access( dir, constants.O_RDWR )
+    }
+    catch {
+        await fs.mkdir( dir )
+    }
 }
 
 const ensureHome = async (dir) => {
@@ -151,9 +175,22 @@ const openDirDialog = async (onSuccess) => {
     }
 }
 
-ipcMain.on('follow-link', async (event, fname)=> {
-    fname = decodeURI(fname)
-    const full = toFullPath(fname)
+ipcMain.on('follow-link', async (event, fnameOrg)=> {
+    fnameOrg = decodeURI(fnameOrg)
+    const seps = fnameOrg.split("/")
+    let full = ""
+    let fname = fnameOrg
+
+    if(seps.length > 1) {
+        relativeDir = path.join(relativeDir, seps.slice(0, seps.length-1).join("/"))
+        fname = seps[seps.length-1]
+
+        const absDir = path.join(store.get('root-path'), relativeDir)
+        ensureDir(absDir)
+        updateRecentFiles(event.sender)
+    }
+
+    full = toFullPath(fname)
     try {
         await fs.access(full, constants.O_RDWR)
         openMd(fname, event.sender)
@@ -162,6 +199,26 @@ ipcMain.on('follow-link', async (event, fname)=> {
         event.sender.send('create-new', fname)
     }
 })
+
+// dir
+//
+// root: ""
+// root/RandomThoughts: "/RandomThoughts"
+// root/RandomThoughts/dir1: "/RandomThougts/dir1"
+ipcMain.on('move-dir', async (event, dir)=> {
+    dir = decodeURI(dir)
+    if (dir == '') {
+        relativeDir = ""
+    } else {
+        // skip head '/'
+        relativeDir = dir.substring(1)
+        await ensureHome(toFullDir())
+    }
+
+    openMd("Home.md", event.sender)
+    updateRecentFiles(event.sender)
+})
+
 
 ipcMain.on('click-edit', async (event, mdname) => {
     const full = toFullPath(mdname)

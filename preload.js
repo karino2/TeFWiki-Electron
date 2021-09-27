@@ -14,6 +14,14 @@ window.addEventListener('DOMContentLoaded', () => {
             ipcRenderer.send('follow-link', href.substring(11))
             return true
         }
+        if (e.target.tagName == 'A' && e.target.className == 'wikidir')
+        {
+            e.preventDefault()
+            const href = e.target.href; /// tefwiki:///root/RandomThoughts, etc.
+            toViewMode()
+            ipcRenderer.send('move-dir', href.substring(15))
+            return true
+        }
         return false
     }
 
@@ -27,14 +35,55 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
     })
 
+    const breadUL = document.getElementById('bread')
+    
+    breadUL.addEventListener('click', (e)=> {
+        if (followLink(e))
+            return;
+    })
+
+    /*
+        <li><a href="#">Bulma</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Components</a></li>
+        <li class="is-active"><a href="#" aria-current="page">Breadcrumb</a></li>
+    */
+
+    // root -> dirArr = []
+    // root/RandomThoughts -> dirArr = ["RandomThoughts"]
+    // root/RandomThoughts/Test -> dirArr = ["RandomThoughts", "Test"]
+    const updateBread = (dirArr) => {        
+        if(dirArr.length == 0 || (dirArr.length == 1 && dirArr[0] == '')) {
+            breadUL.innerHTML = ""
+            return
+        }
+        let htmls = []
+
+        htmls.push(`<li><a aria-current="page" class="wikidir" href="tefwiki://root">Root</a></li>`)
+        let dirs = ["root"]
+        for(const cur of dirArr.slice(0, dirArr.length-1)) {
+            dirs.push(cur)
+            const absDir = dirs.join("/")
+            htmls.push(`<li><a class="wikidir" href="tefwiki://${absDir}">${cur}</a></li>`)
+        }
+
+        const cur = dirArr[dirArr.length-1]
+        dirs.push(cur)
+        const absDir = dirs.join("/")
+        htmls.push(`<li class="is-active"><a class="wikidir" href="tefwiki://${absDir}">${cur}</a></li>`)
+        breadUL.innerHTML = htmls.join('\n')
+    }
+
     const title = document.getElementById('title')
     const dateElem = document.getElementById('date')
 
-    ipcRenderer.on('update-md', (event, fname, mtime, html) => {
+    ipcRenderer.on('update-md', (event, fname, mtime, html, relativeDir) => {
         mdname = fname
         title.innerText = fname.substring(0, fname.length-3)
         dateElem.innerText = mtime
         viewRoot.innerHTML = html
+
+        updateBread(relativeDir.split("/"))
     })
 
     let prevFname = ""
