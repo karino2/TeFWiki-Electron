@@ -46,6 +46,22 @@ For example, `[[SomeLink]]` is the link to file `SomeLink.md` in the same folder
 You can only use a valid file name character for WikiLink.
 For example, you can't use `/`.
 
+## SubWiki
+
+TeFWiki now supports SubWiki feature.
+It is the feature that supports multiple independent wikis as children.
+
+The SubWiki is implemented as a directory.
+
+Child wiki cannot link to parent, parent can link to child wiki by a slash. For example, like `[[Subwiki1/Home]]`.
+If you follow the link to SubWiki, it ENTERs to that SubWiki and all WikiLink and RecentChanges are only for that SubWiki's one.
+For example, `[[Home]]` in the parent Wiki is `Home.md` while `[[Home]]` in the Subwiki1 is `Subwiki1/Home.md`.
+
+From child to parent, you can only navigate via bread crumbs.
+
+With these restrictions, you can move the SubWiki folder to another place and use it as an independent Wiki.
+For this characteristic, you can use each SubWiki as a deployment unit (for example, deploy to the GitHub Pages or GitHub Wiki by simple shell script).
+
 # Concept
 
 TeFWiki is just a plain text wiki, formated with GFM markdown + WikiLink.
