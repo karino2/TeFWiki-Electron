@@ -13,7 +13,8 @@ const options = {
     uriSuffix: '.md',
     baseURL: "tefwiki:///",
     makeAllLinksAbsolute: true,
-    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー：]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー]+))?\]\]/,
+    // for ：, jekyll seems link to replace hankaku :, and fail to map to file. So we do not support TeFWiki either.
+    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー]+))?\]\]/,
     htmlAttributes: {'class': 'wikilink'}
 }
 
