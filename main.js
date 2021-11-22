@@ -128,12 +128,36 @@ const toFullDir = () => {
     return path.join(store.get('root-path'), relativeDir)
 }
 
+/*
+// relativeDir format
+//
+// root: ""
+// test/Home.md: "test"
+// test/test2/Home.md: "test/test2"
+let relativeDir = ""
+*/
+const siblings = async() => {
+    if(relativeDir == "")
+        return []
+    const seps = relativeDir.split("/")
+    const parentRelative = seps.slice(0, seps.length-1).join("/")
+    const cur = seps[seps.length-1]
+    const parent = path.join(store.get('root-path'), parentRelative)
+    const children =  await fs.readdir(parent, {withFileTypes: true})
+    return children
+        .filter( f => f.name != cur && f.isDirectory() )
+        .map( f=> f.name )
+        .sort()
+}
+
 const openMd = async(fname, targetWin) => {
     const mdpath = toFullPath(fname)
     const stat = await fs.stat(mdpath)
     const cont = await fs.readFile(mdpath)
     const html = md.render(cont.toString())
-    targetWin.send('update-md', fname, stat.mtime, html, relativeDir)
+    const sibWikis = await siblings()
+    // console.log(sibWikis)
+    targetWin.send('update-md', fname, stat.mtime, html, relativeDir, sibWikis)
 }
 
 const ensureDir = async (dir) => {
@@ -220,7 +244,6 @@ ipcMain.on('move-dir', async (event, dir)=> {
     openMd("Home.md", event.sender)
     updateRecentFiles(event.sender)
 })
-
 
 ipcMain.on('click-edit', async (event, mdname) => {
     const full = toFullPath(mdname)

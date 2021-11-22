@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 辿ったらtrueを返す
     const followLink = (e)=> {
-        if (e.target.tagName == 'A' && e.target.className == 'wikilink')
+        if (e.target.tagName == 'A' && e.target.classList.contains('wikilink'))
         {
             e.preventDefault()
             const href = e.target.href; /// tefwiki:///HelloLink.md, etc.
@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
             ipcRenderer.send('follow-link', href.substring(11))
             return true
         }
-        if (e.target.tagName == 'A' && e.target.className == 'wikidir')
+        if (e.target.tagName == 'A' && e.target.classList.contains('wikidir'))
         {
             e.preventDefault()
             const href = e.target.href; /// tefwiki:///root/RandomThoughts, etc.
@@ -35,55 +35,72 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
     })
 
-    const breadUL = document.getElementById('bread')
-    
-    breadUL.addEventListener('click', (e)=> {
+    const navroot = document.getElementById('navroot')
+    const navholderDiv = document.getElementById('navholder')
+
+    navholderDiv.addEventListener('click', (e)=> {
         if (followLink(e))
             return;
     })
 
     /*
-        <li><a href="#">Bulma</a></li>
-        <li><a href="#">Documentation</a></li>
-        <li><a href="#">Components</a></li>
-        <li class="is-active"><a href="#" aria-current="page">Breadcrumb</a></li>
+
+        <a class="navbar-item" href="#">Root</a>
+        <a class="navbar-item"  href="#">RandomThoughts</a>
+        <a class="navbar-item"  href="#">Dir1</a>
+        <span class="navbar-item">Dir2</span>
     */
 
     // root -> dirArr = []
     // root/RandomThoughts -> dirArr = ["RandomThoughts"]
     // root/RandomThoughts/Test -> dirArr = ["RandomThoughts", "Test"]
-    const updateBread = (dirArr) => {        
+    const updateBread = (dirArr, sibWikis) => {        
         if(dirArr.length == 0 || (dirArr.length == 1 && dirArr[0] == '')) {
-            breadUL.innerHTML = ""
+            navholderDiv.innerHTML = ""
+            navroot.style.display = 'none'
             return
         }
+        navroot.style.display = 'block'
         let htmls = []
 
-        htmls.push(`<li><a aria-current="page" class="wikidir" href="tefwiki://root">Root</a></li>`)
+        htmls.push(`<a class="navbar-item wikidir" href="tefwiki:///root">Root</a>`)
+        htmls.push(`<span class="navbar-item">/</span>`)
         let dirs = ["root"]
         for(const cur of dirArr.slice(0, dirArr.length-1)) {
             dirs.push(cur)
             const absDir = dirs.join("/")
-            htmls.push(`<li><a class="wikidir" href="tefwiki://${absDir}">${cur}</a></li>`)
+            htmls.push(`<a class="navbar-item wikidir" href="tefwiki:///${absDir}">${cur}</a>`)
+            htmls.push(`<span class="navbar-item">/</span>`)
         }
 
         const cur = dirArr[dirArr.length-1]
-        dirs.push(cur)
-        const absDir = dirs.join("/")
-        htmls.push(`<li class="is-active"><a class="wikidir" href="tefwiki://${absDir}">${cur}</a></li>`)
-        breadUL.innerHTML = htmls.join('\n')
+        if (sibWikis.length == 0) {
+            htmls.push(`<span class="navbar-item">${cur}</span>`)
+        } else {
+            htmls.push(`<div class="navbar-item has-dropdown is-hoverable">`)
+            htmls.push(`<a class="navbar-link">${cur}</a>`)
+            htmls.push(`<div class="navbar-dropdown">`)
+            for (const sib of sibWikis) {
+                const absDir = [...dirs, sib].join("/")
+                htmls.push(`<a class="navbar-item wikidir" href="tefwiki:///${absDir}">${sib}</a>`)
+            }    
+            htmls.push(`</div>`) // navbar-dropdown
+            htmls.push(`</div>`) // navbar-item
+    
+        }
+        navholderDiv.innerHTML = htmls.join('\n')
     }
 
     const title = document.getElementById('title')
     const dateElem = document.getElementById('date')
 
-    ipcRenderer.on('update-md', (event, fname, mtime, html, relativeDir) => {
+    ipcRenderer.on('update-md', (event, fname, mtime, html, relativeDir, sibWikis) => {
         mdname = fname
         title.innerText = fname.substring(0, fname.length-3)
         dateElem.innerText = mtime
         viewRoot.innerHTML = html
 
-        updateBread(relativeDir.split("/"))
+        updateBread(relativeDir.split("/"), sibWikis)
     })
 
     let prevFname = ""
