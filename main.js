@@ -51,6 +51,9 @@ const MAX_RECENT = 15
 // test/test2/Home.md: "test/test2"
 let relativeDir = ""
 
+// Store last opened md name. "Home.md"
+let lastMd = "Home.md"
+
 const recentFiles = async() => {
     const dir = path.join(store.get('root-path'), relativeDir)
     const files = await fs.readdir(dir)
@@ -158,6 +161,7 @@ const openMd = async(fname, targetWin) => {
     const sibWikis = await siblings()
     // console.log(sibWikis)
     targetWin.send('update-md', fname, stat.mtime, html, relativeDir, sibWikis)
+    lastMd = fname
 }
 
 const ensureDir = async (dir) => {
@@ -297,6 +301,8 @@ const template = [
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
           click: (item, focusedWindow)=> {
+              updateRecentFiles(focusedWindow)
+              openMd(lastMd, focusedWindow)
               // reloadFile( focusedWindow )
           }
       },
