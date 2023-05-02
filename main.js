@@ -13,9 +13,7 @@ const options = {
     uriSuffix: '.md',
     baseURL: "tefwiki:///",
     makeAllLinksAbsolute: true,
-    // for ：, jekyll seems link to replace hankaku :, and fail to map to file. So we do not support TeFWiki either.
-    // Zenkaku question mark is the same.
-    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー]+))?\]\]/,
+    linkPattern: /\[\[([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー：！？｜]+)(\|([\w\s/\u4E00-\u9FFFぁ-んァ-ヶ　-ー：！？｜]+))?\]\]/,
     htmlAttributes: {'class': 'wikilink'}
 }
 
@@ -216,7 +214,7 @@ ipcMain.on('follow-link', async (event, fnameOrg)=> {
         fname = seps[seps.length-1]
 
         const absDir = path.join(store.get('root-path'), relativeDir)
-        ensureDir(absDir)
+        await ensureDir(absDir)
         updateRecentFiles(event.sender)
     }
 
