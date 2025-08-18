@@ -1,10 +1,11 @@
-const { ipcMain, dialog, app, BrowserWindow, Menu, shell } = require('electron')
+const { ipcMain, dialog, app, BrowserWindow, Menu, shell, protocol, net } = require('electron')
 const path = require('path')
 const fs = require('fs/promises')
 const { constants } = require('fs')
 const Store = require('electron-store')
 const windowStateKeeper = require('electron-window-state')
 const hljs = require('highlight.js')
+const url = require('node:url')
 
 if (require('electron-squirrel-startup')) return app.quit()
 
@@ -36,6 +37,19 @@ const md = require('markdown-it')({
 
 md.renderer.rules.table_open = ()=> {
     return '<table class="table is-striped">\n'
+}
+
+const orgImgRdr = md.renderer.rules.image
+md.renderer.rules.image = (tokens, idx, options, env, self) => {
+    const token = tokens[idx]
+    const sidx = token.attrIndex('src')
+    if (sidx != -1) {
+        const src = token.attrs[sidx][1]
+        if (!src.includes("://")) {
+            token.attrs[sidx][1] = "tefwikiimg://" + src
+        }
+    }
+    return orgImgRdr(tokens, idx, options, env, self)
 }
 
 const store = new Store()
@@ -317,17 +331,24 @@ const template = [
   }
 ]
 
-
 app.whenReady().then(async () => {
+    protocol.handle('tefwikiimg', (request) => {
+        const relative = request.url.substring('tefwikiimg://'.length)
+        // console.log(relative)
+        const full = toFullPath(relative)
+        // console.log(full)
+        return net.fetch(url.pathToFileURL(full))
+    })
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 
     await createWindow()
 
+
     app.on('activate', async () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             await createWindow()
         }
-    })
+    })    
 })
 
