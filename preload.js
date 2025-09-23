@@ -116,16 +116,23 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('edit').addEventListener('click', ()=> {
         ipcRenderer.send('click-edit', mdname)
     })
+    document.getElementById('edit-b').addEventListener('click', ()=> {
+        ipcRenderer.send('click-edit', mdname)
+    })
 
     const viewButtons = document.getElementById('view-buttons')
+    const viewButtonsB = document.getElementById('view-buttons-b')
     const editButtons = document.getElementById('edit-buttons')
+    const editButtonsB = document.getElementById('edit-buttons-b')
     const editTextArea = document.getElementById('edit-textarea')
     
 
     const toEditMode = (text) => {
         viewButtons.style.display = 'none'
+        viewButtonsB.style.display = 'none'
         viewRoot.style.display = 'none'
         editButtons.style.display = 'block'
+        editButtonsB.style.display = 'block'
         editTextArea.style.display = 'block'
         editTextArea.value = text
     }
@@ -135,8 +142,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const toViewMode = () => {
         viewButtons.style.display = 'block'
+        viewButtonsB.style.display = 'block'
         viewRoot.style.display = 'block'
         editButtons.style.display = 'none'
+        editButtonsB.style.display = 'none'
         editTextArea.style.display = 'none'
     }
 
@@ -146,19 +155,22 @@ window.addEventListener('DOMContentLoaded', () => {
         toEditMode("")
     }
 
-    document.getElementById('edit-cancel').addEventListener('click', ()=> {
+    const editCancel = () => {
         toViewMode()
         if (isNewMode) {
             isNewMode = false
             ipcRenderer.send('cancel-back', prevFname)
-        }
-    })
-
-    document.getElementById('edit-submit').addEventListener('click', ()=> {
+        }        
+    }
+    const editSubmit = () => {
         isNewMode = false
         ipcRenderer.send('submit', mdname, editTextArea.value)
         toViewMode()        
-    })
+    }
+    document.getElementById('edit-cancel').addEventListener('click', editCancel)
+    document.getElementById('edit-cancel-b').addEventListener('click', editCancel)
+    document.getElementById('edit-submit').addEventListener('click', editSubmit)
+    document.getElementById('edit-submit-b').addEventListener('click', editSubmit)
 
     // recents
     const recentsUL = document.getElementById('recents')    
