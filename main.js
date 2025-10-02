@@ -4,11 +4,23 @@ const fs = require('fs/promises')
 const { constants } = require('fs')
 const Store = require('electron-store')
 const windowStateKeeper = require('electron-window-state')
-const hljs = require('highlight.js')
+const Prism = require('prismjs')
+const loadLanguages = require('prismjs/components/')
+const customClass = require('prismjs/plugins/custom-class/prism-custom-class')
 const url = require('node:url')
+const mfg = require('./prism-mfg')
+
+Prism.languages.mfg = mfg.default.grammar
+
+// number is conflict to bluma.css
+// [PrismJS syntax highlighting is broken due to conflicts with Bulma - Stack Overflow](https://stackoverflow.com/questions/69298860/prismjs-syntax-highlighting-is-broken-due-to-conflicts-with-bulma)
+Prism.plugins.customClass.map({
+    number: 'prism-number',
+    tag: 'prism-tag'
+})
+loadLanguages()
 
 if (require('electron-squirrel-startup')) return app.quit()
-
 
 const options = {
     uriSuffix: '.md',
@@ -23,9 +35,9 @@ const taskList = require('markdown-it-task-lists')
 
 const md = require('markdown-it')({
         highlight: (str, lang) => {
-            if (lang && hljs.getLanguage(lang)) {
+            if (lang && Prism.languages[lang]) {
                 try {
-                    return hljs.highlight(str, {language: lang}).value;
+                    return Prism.highlight(str, Prism.languages[lang], lang)
                 } catch (__) {}
             }
           
