@@ -10,6 +10,32 @@ const customClass = require('prismjs/plugins/custom-class/prism-custom-class')
 const url = require('node:url')
 const mfg = require('./prism-mfg')
 
+/*
+  emacs-client like opening support.
+  [Deep Links - Electron](https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app)
+
+  open "tefwiki://open?path=RandomThouths/TeFWiki.md"
+*/
+
+const debAlert = (msg) => {
+    // console.log(msg)
+}
+
+debAlert("deb1")
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+    debAlert("deb2")
+    app.quit()
+    return
+}
+debAlert("deb3")
+app.setAsDefaultProtocolClient('tefwiki')
+
+/*
+  Markdown related setup
+*/
 Prism.languages.mfg = mfg.default.grammar
 
 // number is conflict to bluma.css
@@ -99,6 +125,7 @@ const updateRecentFiles = async(win) => {
    win.send('update-recents', recents)
 }
 
+let g_window = null
 
 const createWindow = async ()=>{
     const winStat = windowStateKeeper({
@@ -114,6 +141,7 @@ const createWindow = async ()=>{
             preload: path.join(__dirname, 'preload.js')
         }
     })
+    g_window = win
     winStat.manage(win)
   
     win.loadFile('index.html')
@@ -289,6 +317,29 @@ ipcMain.on('submit', async (event, mdname, text)=> {
 ipcMain.on('cancel-back', async(event, mdname)=> {
     await openMd(mdname, event.sender)
 })
+
+app.on('open-url', async (event, urlStr) => {
+    debAlert("deb4")
+    event.preventDefault()
+    const filePath = new URL(urlStr).searchParams.get('path')
+    if (filePath) {
+        const seps = filePath.split("/")
+        let fname = seps[seps.length-1]
+        if (seps.length > 1) {
+            relativeDir = seps.slice(0, seps.length-1).join("/")
+            updateRecentFiles(g_window)
+        }
+        full = toFullPath(fname)
+        try {
+            await fs.access(full, constants.O_RDWR)
+            openMd(fname, g_window)
+        }
+        catch {
+            g_window.send('create-new', fname)
+        }
+    }
+});
+
 
 const isMac = process.platform === 'darwin'
 

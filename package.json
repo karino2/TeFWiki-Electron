@@ -36,7 +36,13 @@
     "forge": {
       "packagerConfig": {
         "name": "TeFWiki",
-        "icon": "misc/icons/icon"
+        "icon": "misc/icons/icon",
+        "protocols": [
+          {
+            "name": "TeFWiki Electron",
+            "schemes": ["tefwiki"]
+          }
+        ]
       },
       "makers": [
         {
