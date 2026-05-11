@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "deploy": "cp -r out/TeFWiki-darwin-x64/TeFWiki.app /Applications",
+    "deploy": "cp -r out/TeFWiki-darwin-arm64/TeFWiki.app /Applications",
     "icon-make": "./node_modules/.bin/electron-icon-builder --flatten --input=./misc/icon_original.png --output=./misc",
     "make": "electron-forge make"
   },
