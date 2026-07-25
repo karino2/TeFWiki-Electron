@@ -94,6 +94,53 @@ window.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('title')
     const dateElem = document.getElementById('date')
 
+    const backlinksSection = document.getElementById('backlinks-section')
+    const backlinksContainer = document.getElementById('backlinks')
+
+    backlinksContainer.addEventListener('click', (e)=> {
+        if (followLink(e))
+            return;
+    })
+
+    const renderBacklinks = (backlinks) => {
+        backlinksSection.style.display = 'block'
+        backlinksContainer.innerHTML = ''
+
+        if (!backlinks || backlinks.length === 0) {
+            backlinksContainer.innerHTML = '<p class="has-text-grey">No backlinks found.</p>'
+            return
+        }
+
+        const list = document.createElement('ul')
+        list.className = 'menu-list'
+
+        backlinks.forEach((item) => {
+            const listItem = document.createElement('li')
+            const link = document.createElement('a')
+            link.className = 'wikilink has-text-link'
+            link.href = item.path
+            link.textContent = item.title
+            listItem.appendChild(link)
+            list.appendChild(listItem)
+        })
+
+        backlinksContainer.appendChild(list)
+    }
+
+    const requestBacklinks = (fname) => {
+        if (!backlinksSection || !backlinksContainer) {
+            return
+        }
+
+        backlinksSection.style.display = 'block'
+        backlinksContainer.innerHTML = '<p class="has-text-grey">Loading backlinks…</p>'
+        ipcRenderer.send('request-backlinks', fname)
+    }
+
+    ipcRenderer.on('update-backlinks', (event, backlinks) => {
+        renderBacklinks(backlinks)
+    })
+
     ipcRenderer.on('update-md', (event, fname, mtime, html, relativeDir, sibWikis) => {
         mdname = fname
         title.innerText = fname.substring(0, fname.length-3)
@@ -101,6 +148,7 @@ window.addEventListener('DOMContentLoaded', () => {
         viewRoot.innerHTML = html
 
         updateBread(relativeDir.split("/"), sibWikis)
+        requestBacklinks(fname)
     })
 
     let prevFname = ""

@@ -104,20 +104,25 @@ let relativeDir = ""
 // Store last opened md name. "Home.md"
 let lastMd = "Home.md"
 
-const recentFiles = async() => {
-    const dir = path.join(store.get('root-path'), relativeDir)
-    const files = await fs.readdir(dir)
-    const fwithm = await Promise.all(files
-        .filter( fname => fname.endsWith(".md") )
-        .map( async fname=> {
-            const full = path.join(dir, fname)
-            const mtime = (await fs.stat(full)).mtime
-            return {fname, mtime}
-        }))
+const listMarkdownFiles = async (dir) => {
+    if (!dir) return []
 
-    return fwithm.sort( (a, b)=> b.mtime - a.mtime)
-            .slice(0, MAX_RECENT)
-            .map( pair=> {return {abs: `/${pair.fname}`, label:pair.fname.substring(0, pair.fname.length-3)}})
+    return Promise.all(
+        (await fs.readdir(dir))
+            .filter((fname) => fname.endsWith('.md'))
+            .map(async (fname) => {
+                const full = path.join(dir, fname)
+                const mtime = (await fs.stat(full)).mtime
+                return { fname, full, mtime }
+            })
+    )
+}
+
+const recentFiles = async() => {
+    return (await listMarkdownFiles(toFullDir()))
+        .sort((a, b) => b.mtime - a.mtime)
+        .slice(0, MAX_RECENT)
+        .map((pair) => ({ abs: `/${pair.fname}`, label: pair.fname.substring(0, pair.fname.length - 3) }))
 }
 
 const updateRecentFiles = async(win) => {
@@ -181,6 +186,34 @@ const toFullPath = (fname) => {
 
 const toFullDir = () => {
     return path.join(store.get('root-path'), relativeDir)
+}
+
+const buildBacklinkInfo = async () => {
+    const backlinkInfo = {}
+    const wikiLinkPattern = new RegExp(options.linkPattern.source, 'g')
+
+    for (const {fname, full} of await listMarkdownFiles(toFullDir())) {
+        const srcName = fname.normalize('NFC')
+        const content = await fs.readFile(full, 'utf8')
+        const links = content.matchAll(wikiLinkPattern)
+
+        for (const match of links) {
+            const destName = `${match[1].trim()}.md`.normalize('NFC')
+            if (!destName) {
+                continue
+            }
+
+            if (!backlinkInfo[destName]) {
+                backlinkInfo[destName] = []
+            }
+
+            if (!backlinkInfo[destName].includes(srcName)) {
+                backlinkInfo[destName].push(srcName)
+            }
+        }
+    }
+
+    return backlinkInfo
 }
 
 /*
@@ -280,6 +313,21 @@ ipcMain.on('follow-link', async (event, fnameOrg)=> {
     catch {
         event.sender.send('create-new', fname)
     }
+})
+
+ipcMain.on('request-backlinks', async (event, fname) => {
+    const backlinkInfo = await buildBacklinkInfo()
+    const sources = backlinkInfo[fname.normalize('NFC')] || []
+
+    const backlinks = sources.map((sourcePath) => {
+        const title = path.basename(sourcePath, '.md')
+        return {
+            title,
+            path: `tefwiki:///${sourcePath}`
+        }
+    })
+
+    event.sender.send('update-backlinks', backlinks)
 })
 
 // dir
