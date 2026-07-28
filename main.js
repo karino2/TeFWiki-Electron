@@ -330,6 +330,13 @@ ipcMain.on('request-backlinks', async (event, fname) => {
     event.sender.send('update-backlinks', backlinks)
 })
 
+ipcMain.on('request-search-candidates', async (event) => {
+    const candidates = (await listMarkdownFiles(toFullDir()))
+        .sort((a, b) => b.mtime - a.mtime)
+        .map((pair) => ({ title: pair.fname.substring(0, pair.fname.length - 3), path: pair.fname }))
+    event.sender.send('update-search-candidates', candidates)
+})
+
 // dir
 //
 // root: ""

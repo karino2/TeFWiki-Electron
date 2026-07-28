@@ -31,12 +31,25 @@
 
 </head>
 <body id="body" style="background: #FBF8ED">
-    <nav class="navbar is-success" id="navroot" style="display:none;">
+    <nav class="navbar is-success" id="navroot">
         <div id="navholder" class="navbar-menu">
             <a class="navbar-item" href="#">Root</a>
             <a class="navbar-item"  href="#">RandomThoughts</a>
             <a class="navbar-item"  href="#">Dir1</a>
             <span class="navbar-item">Dir2</span>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item" style="position: relative;">
+                <button class="button is-small is-light" id="search-button" type="button" aria-label="Search">
+                    <span class="icon is-small">
+                        <span aria-hidden="true">🔍</span>
+                    </span>
+                </button>
+                <div id="search-panel" class="box p-3" style="display:none; position:absolute; right:0; top:100%; margin-top:0.5rem; width:260px; z-index:1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <input id="search-input" class="input is-small mb-2" type="text" placeholder="Search files" />
+                    <ul id="search-results" class="menu-list"></ul>
+                </div>
+            </div>
         </div>
     </nav>
     <div class="section">

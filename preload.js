@@ -37,11 +37,111 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const navroot = document.getElementById('navroot')
     const navholderDiv = document.getElementById('navholder')
+    const searchButton = document.getElementById('search-button')
+    const searchPanel = document.getElementById('search-panel')
+    const searchInput = document.getElementById('search-input')
+    const searchResults = document.getElementById('search-results')
+    const searchCandidates = []
 
     navholderDiv.addEventListener('click', (e)=> {
         if (followLink(e))
             return;
     })
+
+    const selectSearchItem = (item) => {
+        toViewMode()
+        searchPanel.style.display = 'none'
+        ipcRenderer.send('follow-link', item.path)
+    }
+
+    const filterCandidates = (query) => {
+        const normalizedQuery = query.trim().normalize('NFC')
+        return searchCandidates.filter((item) => {
+            return item.title.normalize('NFC').includes(normalizedQuery)
+        })
+    }
+
+    const renderSearchResults = (query = '') => {
+        const filtered = filterCandidates(query)
+
+        searchResults.innerHTML = ''
+        if (filtered.length === 0) {
+            const emptyItem = document.createElement('li')
+            emptyItem.className = 'menu-item'
+            emptyItem.innerHTML = '<span class="has-text-grey">No matches</span>'
+            searchResults.appendChild(emptyItem)
+            return
+        }
+
+        filtered.forEach((item) => {
+            const listItem = document.createElement('li')
+            listItem.className = 'menu-item'
+            const link = document.createElement('a')
+            link.href = '#'
+            link.textContent = item.title
+            link.dataset.path = item.path
+            link.className = 'has-text-link'
+            link.addEventListener('click', (event) => {
+                event.preventDefault()
+                selectSearchItem(item)
+            })
+            listItem.appendChild(link)
+            searchResults.appendChild(listItem)
+        })
+    }
+
+    const isSearchPanelVisible = () => {
+        return searchPanel.style.display === 'block'
+    }
+
+    const startIncrementalSearch = () => {
+        searchPanel.style.display = 'block'
+        searchInput.value = ''
+        renderSearchResults('')
+        searchInput.focus()
+    }
+    
+    ipcRenderer.on('update-search-candidates', (event, candidates) => {
+        searchCandidates.length = 0
+        searchCandidates.push(...candidates)
+        startIncrementalSearch()
+    });
+
+    searchButton.addEventListener('click', (event) => {
+        event.stopPropagation()
+        if (isSearchPanelVisible()) {
+            searchPanel.style.display = 'none'
+            return
+        } else {
+            ipcRenderer.send('request-search-candidates')
+            return
+        }
+    })
+
+    searchInput.addEventListener('input', (event) => {
+        renderSearchResults(event.target.value)
+    })
+
+    searchInput.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' || event.isComposing) {
+            return
+        }
+
+        const filtered = filterCandidates(searchInput.value)
+
+        if (filtered.length === 1) {
+            event.preventDefault()
+            selectSearchItem(filtered[0])
+        }
+    })
+
+    document.addEventListener('click', (event) => {
+        if (!searchPanel.contains(event.target) && event.target !== searchButton && !searchButton.contains(event.target)) {
+            searchPanel.style.display = 'none'
+        }
+    })
+
+    renderSearchResults('')
 
     /*
 
@@ -57,10 +157,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const updateBread = (dirArr, sibWikis) => {        
         if(dirArr.length == 0 || (dirArr.length == 1 && dirArr[0] == '')) {
             navholderDiv.innerHTML = ""
-            navroot.style.display = 'none'
             return
         }
-        navroot.style.display = 'block'
         let htmls = []
 
         htmls.push(`<a class="navbar-item wikidir" href="tefwiki:///root">Root</a>`)
