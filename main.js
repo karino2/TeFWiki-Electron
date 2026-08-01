@@ -58,6 +58,7 @@ const options = {
 
 const wikilinks = require('@kwvanderlinde/markdown-it-wikilinks')(options)
 const taskList = require('markdown-it-task-lists')
+const mdkatex = require('@vscode/markdown-it-katex').default
 
 const md = require('markdown-it')({
         highlight: (str, lang) => {
@@ -72,6 +73,7 @@ const md = require('markdown-it')({
     })
     .use(wikilinks)
     .use(taskList)
+    .use(mdkatex, { throwOnError: false, errorColor: ' #cc0000' })
 
 md.renderer.rules.table_open = ()=> {
     return '<table class="table is-striped">\n'
@@ -147,6 +149,7 @@ const createWindow = async ()=>{
         }
     })
     g_window = win
+    // win.webContents.openDevTools();
     winStat.manage(win)
   
     win.loadFile('index.html')

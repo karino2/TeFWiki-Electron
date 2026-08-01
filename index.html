@@ -11,19 +11,13 @@
     <link rel="stylesheet" href="./node_modules/bulma/css/bulma.css">
     <link rel="stylesheet" href="./node_modules/prismjs/themes/prism.css">
     <link rel="stylesheet" href="./node_modules/katex/dist/katex.min.css">
-    <script defer src="./node_modules/katex/dist/katex.min.js"></script>
     <script>
-    // DOM と defer スクリプト (KaTeX) の読み込みが完了したタイミングで実行
+    // DOM と defer スクリプトの読み込みが完了したタイミングで実行
+    // katexはサーバーサイドにしたのでmain.jsからipcしてもタイミング的に間に合うようになったが、クライアントからpullして悪い事は無いのでこのロジックは残す。
     window.addEventListener('DOMContentLoaded', async () => {
       await window.api.getInitialData();
-
-      console.log("deb1")
-      if (window.katex) {
-      console.log("deb2")
-        // katex.render(data.formula, document.getElementById('math'));
-      }
     });
-  </script>    
+    </script>    
     <style>
         html {
             height: 100%;
