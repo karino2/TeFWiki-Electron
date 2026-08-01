@@ -61,6 +61,20 @@ window.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const getSearchResultLinks = () => {
+        return Array.from(searchResults.querySelectorAll('a.has-text-link'))
+    }
+
+    const focusSearchResultByIndex = (index) => {
+        const links = getSearchResultLinks()
+        if (links.length === 0) {
+            return
+        }
+
+        const safeIndex = Math.max(0, Math.min(index, links.length - 1))
+        links[safeIndex].focus()
+    }
+
     const renderSearchResults = (query = '') => {
         const filtered = filterCandidates(query)
 
@@ -81,6 +95,7 @@ window.addEventListener('DOMContentLoaded', () => {
             link.textContent = item.title
             link.dataset.path = item.path
             link.className = 'has-text-link'
+            link.tabIndex = 0
             link.addEventListener('click', (event) => {
                 event.preventDefault()
                 selectSearchItem(item)
@@ -141,15 +156,75 @@ window.addEventListener('DOMContentLoaded', () => {
     })
 
     searchInput.addEventListener('keydown', (event) => {
-        if (event.key !== 'Enter' || event.isComposing) {
+        const { key } = event
+        const links = getSearchResultLinks()
+
+        if (key === 'ArrowDown' && links.length > 0) {
+            event.preventDefault()
+            const activeIndex = links.findIndex((link) => link === document.activeElement)
+            if (activeIndex === -1) {
+                focusSearchResultByIndex(0)
+                return
+            }
+            if (activeIndex === links.length - 1) {
+                searchInput.focus()
+                return
+            }
+            focusSearchResultByIndex(activeIndex + 1)
+            return
+        }
+
+        if (key === 'ArrowUp' && links.length > 0) {
+            event.preventDefault()
+            const activeIndex = links.findIndex((link) => link === document.activeElement)
+            if (activeIndex === -1) {
+                focusSearchResultByIndex(links.length - 1)
+                return
+            }
+            if (activeIndex === 0) {
+                searchInput.focus()
+                return
+            }
+            focusSearchResultByIndex(activeIndex - 1)
+            return
+        }
+
+        if (key !== 'Enter' || event.isComposing) {
             return
         }
 
         const filtered = filterCandidates(searchInput.value)
 
+        if (document.activeElement && document.activeElement !== searchInput && document.activeElement.classList.contains('has-text-link')) {
+            return
+        }
+
         if (filtered.length === 1) {
             event.preventDefault()
             selectSearchItem(filtered[0])
+        }
+    })
+
+    searchResults.addEventListener('keydown', (event) => {
+        const links = getSearchResultLinks()
+        const currentIndex = links.findIndex((link) => link === document.activeElement)
+
+        if (event.key === 'ArrowDown' && links.length > 0) {
+            event.preventDefault()
+            if (currentIndex >= links.length - 1) {
+                searchInput.focus()
+                return
+            }
+            focusSearchResultByIndex(currentIndex === -1 ? 0 : currentIndex + 1)
+        }
+
+        if (event.key === 'ArrowUp' && links.length > 0) {
+            event.preventDefault()
+            if (currentIndex <= 0) {
+                searchInput.focus()
+                return
+            }
+            focusSearchResultByIndex(currentIndex - 1)
         }
     })
 
