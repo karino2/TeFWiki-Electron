@@ -156,18 +156,6 @@ const createWindow = async ()=>{
         e.preventDefault()
         shell.openExternal(url)
     })
-
-    const rootPath = store.get('root-path')
-    if (rootPath == null) {
-        await openDirDialog((dir)=>{
-            gotoHome(dir, win)
-        })
-    }
-    else
-    {
-        await gotoHome(rootPath, win)
-    }
-    updateRecentFiles(win)
 }
 
 app.on('window-all-closed', () => {
@@ -371,6 +359,20 @@ ipcMain.on('submit', async (event, mdname, text)=> {
 
 ipcMain.on('cancel-back', async(event, mdname)=> {
     await openMd(mdname, event.sender)
+})
+
+ipcMain.on('request-initial-data', async (event)=> {
+    const rootPath = store.get('root-path')
+    if (rootPath == null) {
+        await openDirDialog((dir)=>{
+            gotoHome(dir, g_window)
+        })
+    }
+    else 
+    {
+        await gotoHome(rootPath, g_window)
+    }
+    updateRecentFiles(g_window)
 })
 
 app.on('open-url', async (event, urlStr) => {

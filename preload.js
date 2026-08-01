@@ -1,4 +1,8 @@
-const {ipcRenderer} = require('electron')
+const { contextBridge, ipcRenderer } = require('electron')
+
+contextBridge.exposeInMainWorld('api', {
+    getInitialData: () => ipcRenderer.send('request-initial-data')
+})
 
 window.addEventListener('DOMContentLoaded', () => {
     const viewRoot = document.getElementById('content-root')
