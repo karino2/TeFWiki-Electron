@@ -94,6 +94,22 @@ window.addEventListener('DOMContentLoaded', () => {
         return searchPanel.style.display === 'block'
     }
 
+    const eventHandled = (event) => {
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+    }
+
+    const toggleSearchPanel = () => {
+        if (isSearchPanelVisible()) {
+            searchPanel.style.display = 'none'
+            return
+        }
+
+        ipcRenderer.send('request-search-candidates')
+    }
+
     const startIncrementalSearch = () => {
         searchPanel.style.display = 'block'
         searchInput.value = ''
@@ -108,13 +124,15 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     searchButton.addEventListener('click', (event) => {
-        event.stopPropagation()
-        if (isSearchPanelVisible()) {
-            searchPanel.style.display = 'none'
-            return
-        } else {
-            ipcRenderer.send('request-search-candidates')
-            return
+        toggleSearchPanel()
+        eventHandled(event)
+    })
+
+    document.addEventListener('keydown', (event) => {
+        const isFindShortcut = event.key && event.key.toLowerCase() === 'f' && (event.metaKey || event.ctrlKey)
+        if (isFindShortcut) {
+            toggleSearchPanel()
+            eventHandled(event)
         }
     })
 
